@@ -1,0 +1,107 @@
+@font-face {
+  font-family: 'Hermit';
+  src: url('Hermit-medium.otf');
+  font-weight: normal;
+  font-style: normal;
+}
+
+* {
+  margin: 0px;
+  padding: 0px;
+  font-family: "Hermit", Verdana;
+  font-size: 0.95em;
+}
+
+html, body {
+  width: 900px;
+  margin: auto;
+}
+
+#popup {
+  display: none;
+  border: 1px solid #aaaaaa;
+}
+
+#popup_menu {
+  background-color: #aaaaaa;
+  border-bottom: 1px solid #888888;
+  padding: 5px;
+}
+
+h1 {
+  margin-top: 10px;
+}
+
+h2 {
+  padding: 5px;
+}
+
+#content {
+  clear: both;
+}
+
+table {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  width: calc(100% - 200px); 
+}
+
+th, td {
+  padding: 2px;
+  vertical-align: middle;
+  text-align: left;
+}
+
+span {
+  color: #000000;
+}
+
+#container {
+  margin: auto;
+  display: none;
+}
+
+select {
+  width: 150px;
+  border: 1px solid #aaaaaa;
+  padding: 2px;
+}
+
+input {
+  width: 100%;
+  border: 1px solid #aaaaaa;
+  padding: 2px;
+}
+
+textarea {
+  width: 100%;
+}
+
+td.select {
+  width: 150px;
+}
+
+td.input {
+  width: 500px;
+  border-bottom: 1px solid #aaaaaa;
+}
+
+td.submit {
+  width: 50px;
+  padding-left: 10px;
+}
+
+tr.line td.input {
+  border: 0px;
+}
+
+p.link {
+  font-weight: 800;
+  color: #000060;
+  cursor: pointer;
+}
+
+li {
+  float: left;
+  margin: 20px;
+}
