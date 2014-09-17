@@ -1,3 +1,7 @@
+close = ->
+  $('#popup_content').empty()
+  $('#popup').css 'display', 'none'
+
 save = (filer, db)->
   filer.write 'file.txt', {
     data: JSON.stringify(db)
@@ -30,6 +34,7 @@ line = (filter, db)->
 
   input = $ '<input class="text" type="text"></input>'
   input.focus ->
+    close()
     dt = new Date($.now())
     $(this).attr 'value',
       dt.getFullYear() + sprintf('.%02d.%02d, ', dt.getMonth(), dt.getDate()) +
@@ -37,7 +42,7 @@ line = (filter, db)->
 
   submit = $ '<p class="link">Save</p>'
   submit.click ->
-    if input.val()
+    if input.val() and input.val()[input.val().length - 2] != '|'
       db.push {
         'time': $.now()
         'category': select.val()
@@ -47,7 +52,10 @@ line = (filter, db)->
       redraw filter, db
 
   input.keypress (e)->
-      if e.which == 13 and $(this).val()
+      char = true
+      if $(this).val()[$(this).val().length - 2] == '|'
+        char = false
+      if e.which == 13 and $(this).val() and char
         db.push {
           'time': $.now()
           'category': select.val()
@@ -60,6 +68,58 @@ line = (filter, db)->
   tr.append $('<td class="input"></td>').append(input)
   tr.append $('<td class="submit"></td>').append(submit)
 
+popup = (copy, contents, values)->
+    $('#popup_content').empty().append copy.append(contents)
+    for value in values
+      $('#popup_content').append copy.append(value)
+    $('#popup').css 'display', 'block'
+
+categories = ->
+  $('#categories_link').click ->
+    contents = $('#categories_template').html()
+    copy = $ '<div id="categories"></div>'
+    popup copy, contents, [ ]
+
+download = (filer)->
+  $('#download_link').click ->
+    contents = $('#download_template').html()
+    copy = $ '<div id="download"></div>'
+    textarea = $ '<textarea></textarea>'
+
+    filer.open 'file.txt', (file)->
+      reader = new FileReader()
+      reader.onload = (e)->
+        textarea.text reader.result
+        if reader.result == '[]'
+          popup copy, contents, [ ]
+        else
+          copybutton = $ '<p class="link">Copy</p>'
+          copybutton.click ->
+            close()
+          popup copy, contents, [ textarea, copybutton ]
+      reader.readAsText(file)
+
+upload = (filer)->
+  $('#upload_link').click ->
+    contents = $('#upload_template').html()
+    copy = $ '<div id="upload"></div>'
+
+    textarea = $ '<textarea></textarea>'
+    savebutton = $ '<p class="link">Save</p>'
+    savebutton.click ->
+      if textarea.val()
+        save filer, JSON.parse(textarea.val())
+        redraw filer, JSON.parse(textarea.val())
+        close()
+     popup copy, contents, [ textarea, savebutton ]
+
+clear = (filer)->
+  $('#clear_link').click ->
+    ask = window.confirm 'Would you like to empty the scaffold?'
+    if ask
+      close()
+      empty(filer)
+
 $(document).ready ->
   filer = new Filer()
   filer.init {
@@ -71,21 +131,13 @@ $(document).ready ->
       reader.onload = (e)->
         redraw filer, JSON.parse(reader.result)
       reader.readAsText(file)
+      categories()
+      download filer
+      upload filer
+      clear filer
 
   $('#close_link').click ->
-    $('#popup_content').empty()
-    $('#popup').css 'display', 'none'
-
-  $('#download_link').click ->
-    contents = $('#download_template').html()
-    copy = $ '<div id="download"></div>'
-    $('#popup_content').empty()
-    $('#popup_content').append copy.append(contents)
-    $('#popup').css 'display', 'block'
-
-  $('#clear_link').click ->
-    ask = window.confirm 'Would you like to empty the scaffold?'
-    if ask then empty(filer)
+    close()
 
 remove = (filer, db, index)->
   db.splice index, 1
